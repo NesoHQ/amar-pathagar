@@ -46,7 +46,7 @@ services:
       dockerfile: Dockerfile.dev
     container_name: online-library-frontend
     environment:
-      NEXT_PUBLIC_API_URL: http://localhost:8080
+      NEXT_PUBLIC_API_URL: http://3.73.214.80
     ports:
       - "127.0.0.1:3000:3000"
     volumes:
