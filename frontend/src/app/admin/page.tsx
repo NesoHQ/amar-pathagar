@@ -8,7 +8,7 @@ import { booksAPI } from '@/lib/api'
 
 export default function AdminPage() {
   const router = useRouter()
-  const { isAuthenticated, user, loadFromStorage } = useAuthStore()
+  const { isAuthenticated, user, _hasHydrated } = useAuthStore()
   const [showAddBook, setShowAddBook] = useState(false)
   const [bookForm, setBookForm] = useState({
     title: '',
@@ -20,16 +20,12 @@ export default function AdminPage() {
   })
 
   useEffect(() => {
-    loadFromStorage()
-  }, [loadFromStorage])
-
-  useEffect(() => {
-    if (!isAuthenticated) {
+    if (_hasHydrated && !isAuthenticated) {
       router.push('/login')
-    } else if (user?.role !== 'admin') {
+    } else if (_hasHydrated && isAuthenticated && user?.role !== 'admin') {
       router.push('/dashboard')
     }
-  }, [isAuthenticated, user, router])
+  }, [isAuthenticated, user, _hasHydrated, router])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -50,7 +46,7 @@ export default function AdminPage() {
     }
   }
 
-  if (!isAuthenticated || user?.role !== 'admin') {
+  if (!_hasHydrated || !isAuthenticated || user?.role !== 'admin') {
     return null
   }
 

@@ -8,32 +8,28 @@ import { userAPI } from '@/lib/api'
 
 export default function LeaderboardPage() {
   const router = useRouter()
-  const { isAuthenticated, loadFromStorage } = useAuthStore()
+  const { isAuthenticated, _hasHydrated } = useAuthStore()
   const [data, setData] = useState<any>(null)
   const [activeTab, setActiveTab] = useState('readers')
 
   useEffect(() => {
-    loadFromStorage()
-  }, [loadFromStorage])
-
-  useEffect(() => {
-    if (!isAuthenticated) {
+    if (_hasHydrated && !isAuthenticated) {
       router.push('/login')
-    } else {
+    } else if (isAuthenticated) {
       loadLeaderboard()
     }
-  }, [isAuthenticated, router])
+  }, [isAuthenticated, _hasHydrated, router])
 
   const loadLeaderboard = async () => {
     try {
       const response = await userAPI.getLeaderboard()
-      setData(response.data)
+      setData(response.data.data || response.data)
     } catch (error) {
       console.error('Failed to load leaderboard:', error)
     }
   }
 
-  if (!isAuthenticated || !data) {
+  if (!_hasHydrated || !isAuthenticated || !data) {
     return null
   }
 

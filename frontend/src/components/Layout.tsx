@@ -6,13 +6,9 @@ import { useRouter, usePathname } from 'next/navigation'
 import { useAuthStore } from '@/store/authStore'
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  const { user, isAuthenticated, logout, loadFromStorage } = useAuthStore()
+  const { user, isAuthenticated, logout } = useAuthStore()
   const router = useRouter()
   const pathname = usePathname()
-
-  useEffect(() => {
-    loadFromStorage()
-  }, [loadFromStorage])
 
   const handleLogout = () => {
     logout()

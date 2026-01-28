@@ -8,28 +8,26 @@ import { bookmarksAPI } from '@/lib/api'
 
 export default function MyLibraryPage() {
   const router = useRouter()
-  const { isAuthenticated, user, loadFromStorage } = useAuthStore()
+  const { isAuthenticated, user, _hasHydrated } = useAuthStore()
   const [bookmarks, setBookmarks] = useState<any[]>([])
   const [activeTab, setActiveTab] = useState('all')
 
   useEffect(() => {
-    loadFromStorage()
-  }, [loadFromStorage])
-
-  useEffect(() => {
-    if (!isAuthenticated) {
+    if (_hasHydrated && !isAuthenticated) {
       router.push('/login')
-    } else {
+    } else if (isAuthenticated) {
       loadBookmarks()
     }
-  }, [isAuthenticated, router])
+  }, [isAuthenticated, _hasHydrated, router])
 
   const loadBookmarks = async () => {
     try {
       const response = await bookmarksAPI.getAll()
-      setBookmarks(response.data || [])
+      const bookmarksData = response.data.data || response.data || []
+      setBookmarks(Array.isArray(bookmarksData) ? bookmarksData : [])
     } catch (error) {
       console.error('Failed to load bookmarks:', error)
+      setBookmarks([])
     }
   }
 
@@ -37,7 +35,7 @@ export default function MyLibraryPage() {
     ? bookmarks
     : bookmarks.filter(b => b.bookmark_type === activeTab)
 
-  if (!isAuthenticated || !user) {
+  if (!_hasHydrated || !isAuthenticated || !user) {
     return null
   }
 

@@ -8,7 +8,7 @@ import { booksAPI } from '@/lib/api'
 
 export default function DashboardPage() {
   const router = useRouter()
-  const { user, isAuthenticated, loadFromStorage } = useAuthStore()
+  const { user, isAuthenticated, _hasHydrated } = useAuthStore()
   const [stats, setStats] = useState({
     totalBooks: 0,
     availableBooks: 0,
@@ -16,14 +16,10 @@ export default function DashboardPage() {
   })
 
   useEffect(() => {
-    loadFromStorage()
-  }, [loadFromStorage])
-
-  useEffect(() => {
-    if (!isAuthenticated) {
+    if (_hasHydrated && !isAuthenticated) {
       router.push('/login')
     }
-  }, [isAuthenticated, router])
+  }, [isAuthenticated, _hasHydrated, router])
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -34,7 +30,7 @@ export default function DashboardPage() {
   const loadStats = async () => {
     try {
       const response = await booksAPI.getAll()
-      const books = response.data || []
+      const books = response.data.data || []
       setStats({
         totalBooks: books.length,
         availableBooks: books.filter((b: any) => b.status === 'available').length,
@@ -45,7 +41,7 @@ export default function DashboardPage() {
     }
   }
 
-  if (!isAuthenticated || !user) {
+  if (!_hasHydrated || !isAuthenticated || !user) {
     return null
   }
 

@@ -8,7 +8,7 @@ import { donationsAPI } from '@/lib/api'
 
 export default function DonationsPage() {
   const router = useRouter()
-  const { isAuthenticated, loadFromStorage } = useAuthStore()
+  const { isAuthenticated, _hasHydrated } = useAuthStore()
   const [donations, setDonations] = useState<any[]>([])
   const [showForm, setShowForm] = useState(false)
   const [formData, setFormData] = useState({
@@ -20,23 +20,21 @@ export default function DonationsPage() {
   })
 
   useEffect(() => {
-    loadFromStorage()
-  }, [loadFromStorage])
-
-  useEffect(() => {
-    if (!isAuthenticated) {
+    if (_hasHydrated && !isAuthenticated) {
       router.push('/login')
-    } else {
+    } else if (isAuthenticated) {
       loadDonations()
     }
-  }, [isAuthenticated, router])
+  }, [isAuthenticated, _hasHydrated, router])
 
   const loadDonations = async () => {
     try {
       const response = await donationsAPI.getAll()
-      setDonations(response.data || [])
+      const donationsData = response.data.data || response.data || []
+      setDonations(Array.isArray(donationsData) ? donationsData : [])
     } catch (error) {
       console.error('Failed to load donations:', error)
+      setDonations([])
     }
   }
 
@@ -62,7 +60,7 @@ export default function DonationsPage() {
     }
   }
 
-  if (!isAuthenticated) {
+  if (!_hasHydrated || !isAuthenticated) {
     return null
   }
 

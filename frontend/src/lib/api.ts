@@ -13,9 +13,17 @@ export const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     if (typeof window !== 'undefined') {
-      const token = localStorage.getItem('access_token')
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`
+      // Get token from zustand persist storage
+      const authStorage = localStorage.getItem('auth-storage')
+      if (authStorage) {
+        try {
+          const { state } = JSON.parse(authStorage)
+          if (state?.accessToken) {
+            config.headers.Authorization = `Bearer ${state.accessToken}`
+          }
+        } catch (e) {
+          console.error('Failed to parse auth storage')
+        }
       }
     }
     return config
@@ -29,8 +37,7 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       if (typeof window !== 'undefined') {
-        localStorage.removeItem('access_token')
-        localStorage.removeItem('user')
+        localStorage.removeItem('auth-storage')
         window.location.href = '/login'
       }
     }

@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { persist, createJSONStorage } from 'zustand/middleware'
 
 interface User {
   id: string
@@ -16,44 +17,38 @@ interface AuthState {
   user: User | null
   accessToken: string | null
   isAuthenticated: boolean
+  _hasHydrated: boolean
   setAuth: (user: User, accessToken: string) => void
   logout: () => void
-  loadFromStorage: () => void
+  setHasHydrated: (state: boolean) => void
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
-  user: null,
-  accessToken: null,
-  isAuthenticated: false,
-  
-  setAuth: (user, accessToken) => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('user', JSON.stringify(user))
-      localStorage.setItem('access_token', accessToken)
+export const useAuthStore = create<AuthState>()(
+  persist(
+    (set) => ({
+      user: null,
+      accessToken: null,
+      isAuthenticated: false,
+      _hasHydrated: false,
+      
+      setAuth: (user, accessToken) => {
+        set({ user, accessToken, isAuthenticated: true })
+      },
+      
+      logout: () => {
+        set({ user: null, accessToken: null, isAuthenticated: false })
+      },
+
+      setHasHydrated: (state) => {
+        set({ _hasHydrated: state })
+      },
+    }),
+    {
+      name: 'auth-storage',
+      storage: createJSONStorage(() => localStorage),
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated(true)
+      },
     }
-    set({ user, accessToken, isAuthenticated: true })
-  },
-  
-  logout: () => {
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('user')
-      localStorage.removeItem('access_token')
-    }
-    set({ user: null, accessToken: null, isAuthenticated: false })
-  },
-  
-  loadFromStorage: () => {
-    if (typeof window !== 'undefined') {
-      const userStr = localStorage.getItem('user')
-      const token = localStorage.getItem('access_token')
-      if (userStr && token) {
-        try {
-          const user = JSON.parse(userStr)
-          set({ user, accessToken: token, isAuthenticated: true })
-        } catch (e) {
-          console.error('Failed to parse user from storage')
-        }
-      }
-    }
-  },
-}))
+  )
+)

@@ -20,30 +20,28 @@ interface Book {
 
 export default function BooksPage() {
   const router = useRouter()
-  const { isAuthenticated, loadFromStorage } = useAuthStore()
+  const { isAuthenticated, _hasHydrated } = useAuthStore()
   const [books, setBooks] = useState<Book[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('')
 
   useEffect(() => {
-    loadFromStorage()
-  }, [loadFromStorage])
-
-  useEffect(() => {
-    if (!isAuthenticated) {
+    if (_hasHydrated && !isAuthenticated) {
       router.push('/login')
-    } else {
+    } else if (isAuthenticated) {
       loadBooks()
     }
-  }, [isAuthenticated, router])
+  }, [isAuthenticated, _hasHydrated, router])
 
   const loadBooks = async () => {
     try {
       const response = await booksAPI.getAll({ search, status: statusFilter })
-      setBooks(response.data || [])
+      const booksData = response.data.data || response.data || []
+      setBooks(Array.isArray(booksData) ? booksData : [])
     } catch (error) {
       console.error('Failed to load books:', error)
+      setBooks([])
     } finally {
       setLoading(false)
     }
@@ -62,7 +60,7 @@ export default function BooksPage() {
     }
   }
 
-  if (!isAuthenticated) {
+  if (!_hasHydrated || !isAuthenticated) {
     return null
   }
 

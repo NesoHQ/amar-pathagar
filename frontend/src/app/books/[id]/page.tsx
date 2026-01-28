@@ -9,29 +9,25 @@ import { booksAPI, ideasAPI, reviewsAPI } from '@/lib/api'
 export default function BookDetailPage() {
   const params = useParams()
   const router = useRouter()
-  const { isAuthenticated, user, loadFromStorage } = useAuthStore()
+  const { isAuthenticated, user, _hasHydrated } = useAuthStore()
   const [book, setBook] = useState<any>(null)
   const [ideas, setIdeas] = useState<any[]>([])
   const [showIdeaForm, setShowIdeaForm] = useState(false)
   const [ideaForm, setIdeaForm] = useState({ title: '', content: '' })
 
   useEffect(() => {
-    loadFromStorage()
-  }, [loadFromStorage])
-
-  useEffect(() => {
-    if (!isAuthenticated) {
+    if (_hasHydrated && !isAuthenticated) {
       router.push('/login')
-    } else if (params.id) {
+    } else if (isAuthenticated && params.id) {
       loadBook()
       loadIdeas()
     }
-  }, [isAuthenticated, params.id, router])
+  }, [isAuthenticated, _hasHydrated, params.id, router])
 
   const loadBook = async () => {
     try {
       const response = await booksAPI.getById(params.id as string)
-      setBook(response.data)
+      setBook(response.data.data || response.data)
     } catch (error) {
       console.error('Failed to load book:', error)
     }
@@ -40,9 +36,11 @@ export default function BookDetailPage() {
   const loadIdeas = async () => {
     try {
       const response = await ideasAPI.getByBook(params.id as string)
-      setIdeas(response.data || [])
+      const ideasData = response.data.data || response.data || []
+      setIdeas(Array.isArray(ideasData) ? ideasData : [])
     } catch (error) {
       console.error('Failed to load ideas:', error)
+      setIdeas([])
     }
   }
 
@@ -85,7 +83,7 @@ export default function BookDetailPage() {
     }
   }
 
-  if (!isAuthenticated || !book) {
+  if (!_hasHydrated || !isAuthenticated || !book) {
     return null
   }
 
