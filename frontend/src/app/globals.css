@@ -1,0 +1,68 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-old-paper text-old-ink font-serif;
+    background-image: 
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 1px,
+        rgba(0, 0, 0, 0.02) 1px,
+        rgba(0, 0, 0, 0.02) 2px
+      );
+  }
+}
+
+@layer components {
+  .classic-card {
+    @apply bg-white border-2 border-old-border shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] p-6;
+  }
+  
+  .classic-button {
+    @apply bg-old-ink text-old-paper border-2 border-old-ink px-6 py-2 font-bold uppercase tracking-wider
+           hover:bg-old-paper hover:text-old-ink transition-colors duration-200;
+  }
+  
+  .classic-button-secondary {
+    @apply bg-old-paper text-old-ink border-2 border-old-ink px-6 py-2 font-bold uppercase tracking-wider
+           hover:bg-old-ink hover:text-old-paper transition-colors duration-200;
+  }
+  
+  .classic-input {
+    @apply w-full px-4 py-3 border-2 border-old-border bg-white text-old-ink font-serif
+           focus:border-old-ink focus:outline-none;
+  }
+  
+  .classic-heading {
+    @apply font-bold uppercase tracking-wider border-b-4 border-old-ink pb-2 mb-6;
+  }
+  
+  .old-paper-texture {
+    background-color: #f4f1ea;
+    background-image: 
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 1px,
+        rgba(0, 0, 0, 0.02) 1px,
+        rgba(0, 0, 0, 0.02) 2px
+      );
+  }
+  
+  .typewriter {
+    font-family: 'Courier New', Courier, monospace;
+    letter-spacing: 0.05em;
+  }
+  
+  .stamp {
+    @apply inline-block px-3 py-1 border-2 border-old-ink text-old-ink font-bold uppercase text-xs
+           transform rotate-[-5deg] shadow-sm;
+  }
+  
+  .vintage-badge {
+    @apply inline-flex items-center px-3 py-1 border border-old-ink text-old-ink text-xs font-bold uppercase;
+  }
+}
