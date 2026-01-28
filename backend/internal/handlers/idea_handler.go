@@ -52,7 +52,7 @@ func (h *IdeaHandler) Create(c *gin.Context) {
 }
 
 func (h *IdeaHandler) GetByBook(c *gin.Context) {
-	bookID := c.Param("bookId")
+	bookID := c.Param("id")
 	ideas, err := h.ideaRepo.GetByBook(bookID, 50, 0)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{Error: "Failed to fetch ideas"})

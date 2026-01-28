@@ -33,6 +33,7 @@ func main() {
 	donationRepo := repository.NewDonationRepository(db.DB)
 	reviewRepo := repository.NewReviewRepository(db.DB)
 	bookmarkRepo := repository.NewBookmarkRepository(db.DB)
+	bookRepo := repository.NewBookRepository(db.DB)
 
 	// Initialize services
 	authService := services.NewAuthService(userRepo, cfg.JWT.Secret)
@@ -47,6 +48,7 @@ func main() {
 	donationHandler := handlers.NewDonationHandler(donationRepo, successScoreService, db.DB)
 	reviewHandler := handlers.NewReviewHandler(reviewRepo, successScoreService, notificationService)
 	bookmarkHandler := handlers.NewBookmarkHandler(bookmarkRepo)
+	bookHandler := handlers.NewBookHandler(bookRepo)
 
 	// Setup router
 	router := gin.Default()
@@ -85,9 +87,16 @@ func main() {
 		api.POST("/users/interests", userHandler.AddInterests)
 		api.GET("/leaderboard", userHandler.GetLeaderboard)
 
+		// Book routes
+		api.GET("/books", bookHandler.GetAll)
+		api.POST("/books", bookHandler.Create)
+		api.GET("/books/:id", bookHandler.GetByID)
+		api.GET("/books/:id/ideas", ideaHandler.GetByBook)
+		api.PATCH("/books/:id", bookHandler.Update)
+		api.DELETE("/books/:id", bookHandler.Delete)
+
 		// Reading ideas routes
 		api.POST("/ideas", ideaHandler.Create)
-		api.GET("/books/:bookId/ideas", ideaHandler.GetByBook)
 		api.POST("/ideas/:id/vote", ideaHandler.Vote)
 
 		// Review routes

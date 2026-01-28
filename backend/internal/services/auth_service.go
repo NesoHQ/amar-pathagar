@@ -66,11 +66,14 @@ func (s *AuthService) Register(req dto.RegisterRequest) (*dto.AuthResponse, erro
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
 		User: dto.UserDTO{
-			ID:       user.ID,
-			Username: user.Username,
-			Email:    user.Email,
-			FullName: user.FullName,
-			Role:     user.Role,
+			ID:            user.ID,
+			Username:      user.Username,
+			Email:         user.Email,
+			FullName:      user.FullName,
+			Role:          user.Role,
+			SuccessScore:  user.SuccessScore,
+			BooksShared:   user.BooksShared,
+			BooksReceived: user.BooksReceived,
 		},
 	}, nil
 }
@@ -112,11 +115,14 @@ func (s *AuthService) Login(req dto.LoginRequest) (*dto.AuthResponse, error) {
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
 		User: dto.UserDTO{
-			ID:       user.ID,
-			Username: user.Username,
-			Email:    user.Email,
-			FullName: user.FullName,
-			Role:     user.Role,
+			ID:            user.ID,
+			Username:      user.Username,
+			Email:         user.Email,
+			FullName:      user.FullName,
+			Role:          user.Role,
+			SuccessScore:  user.SuccessScore,
+			BooksShared:   user.BooksShared,
+			BooksReceived: user.BooksReceived,
 		},
 	}, nil
 }

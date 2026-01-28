@@ -20,10 +20,13 @@ type AuthResponse struct {
 }
 
 type UserDTO struct {
-	ID        string `json:"id"`
-	Username  string `json:"username"`
-	Email     string `json:"email"`
-	FullName  string `json:"full_name"`
-	Role      string `json:"role"`
-	AvatarURL string `json:"avatar_url"`
+	ID            string `json:"id"`
+	Username      string `json:"username"`
+	Email         string `json:"email"`
+	FullName      string `json:"full_name"`
+	Role          string `json:"role"`
+	AvatarURL     string `json:"avatar_url"`
+	SuccessScore  int    `json:"success_score"`
+	BooksShared   int    `json:"books_shared"`
+	BooksReceived int    `json:"books_received"`
 }

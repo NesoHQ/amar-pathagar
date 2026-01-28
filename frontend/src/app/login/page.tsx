@@ -23,7 +23,8 @@ export default function LoginPage() {
 
     try {
       const response = await authAPI.login(formData)
-      const { user, access_token } = response.data
+      const { data } = response.data
+      const { user, access_token } = data
       setAuth(user, access_token)
       router.push('/dashboard')
     } catch (err: any) {
